@@ -511,14 +511,14 @@ void Func7(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
     }
 
     // 上升线段计算模式
-    if (nStatus == 1)
+    if (pIn[i] == 1)
     {
       // 计算上升线段斜率
       pOut[i] = (pHigh[i] - pLow[nPrevBot]) / (i - nPrevBot)
         / pLow[nPrevBot] * 100;
     }
     // 下降线段计算模式
-    else if (nStatus == -1)
+    else if (pIn[i] == -1)
     {
       // 计算上升线段斜率
       pOut[i] = (pLow[i] - pHigh[nPrevTop]) / (i - nPrevTop)
