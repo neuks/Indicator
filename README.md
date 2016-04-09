@@ -23,6 +23,5 @@ DRAWLINE(DLL=-1,L,DLL=1,H,0), COLORYELLOW;
 DRAWLINE(DLL=1,H,DLL=-1,L,0), COLORYELLOW;
 
 #联系方式
-
-　缠论算法交易群：433343308 (QQ)
-　加群验证码发送：CZSC
+缠论算法交易群：433343308 (QQ)
+加群验证码发送：CZSC
