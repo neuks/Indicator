@@ -111,8 +111,7 @@ int Parse2(int nCount, float *pOut, float *pHigh, float *pLow)
           nSpan = nCurrTop - nCurrBot;
           for (int j = nCurrBot; j < nCurrTop; j++)
           {
-            if (((pHigh[j] <= pHigh[j+1]) && (pLow[j] >= pLow[j+1])) ||
-                ((pHigh[j] >= pHigh[j+1]) && (pLow[j] <= pLow[j+1])))
+            if ((pHigh[j] >= pHigh[j+1]) && (pLow[j] <= pLow[j+1]))
             {
               nSpan--;
             }
@@ -127,8 +126,7 @@ int Parse2(int nCount, float *pOut, float *pHigh, float *pLow)
           nSpan = nCurrBot - nPrevTop;
           for (int j = nPrevTop; j < nCurrBot; j++)
           {
-            if (((pHigh[j] <= pHigh[j+1]) && (pLow[j] >= pLow[j+1])) ||
-                ((pHigh[j] >= pHigh[j+1]) && (pLow[j] <= pLow[j+1])))
+            if ((pHigh[j] >= pHigh[j+1]) && (pLow[j] <= pLow[j+1]))
             {
               nSpan--;
             }
@@ -143,8 +141,7 @@ int Parse2(int nCount, float *pOut, float *pHigh, float *pLow)
           nSpan = nPrevTop - nPrevBot;
           for (int j = nPrevBot; j < nPrevTop; j++)
           {
-            if (((pHigh[j] <= pHigh[j+1]) && (pLow[j] >= pLow[j+1])) ||
-                ((pHigh[j] >= pHigh[j+1]) && (pLow[j] <= pLow[j+1])))
+            if ((pHigh[j] >= pHigh[j+1]) && (pLow[j] <= pLow[j+1]))
             {
               nSpan--;
             }
@@ -182,8 +179,7 @@ int Parse2(int nCount, float *pOut, float *pHigh, float *pLow)
           nSpan = nCurrBot - nCurrTop;
           for (int j = nCurrTop; j < nCurrBot; j++)
           {
-            if (((pHigh[j] <= pHigh[j+1]) && (pLow[j] >= pLow[j+1])) ||
-                ((pHigh[j] >= pHigh[j+1]) && (pLow[j] <= pLow[j+1])))
+            if ((pHigh[j] >= pHigh[j+1]) && (pLow[j] <= pLow[j+1]))
             {
               nSpan--;
             }
@@ -198,8 +194,7 @@ int Parse2(int nCount, float *pOut, float *pHigh, float *pLow)
           nSpan = nCurrTop - nPrevBot;
           for (int j = nPrevBot; j < nCurrTop; j++)
           {
-            if (((pHigh[j] <= pHigh[j+1]) && (pLow[j] >= pLow[j+1])) ||
-                ((pHigh[j] >= pHigh[j+1]) && (pLow[j] <= pLow[j+1])))
+            if ((pHigh[j] >= pHigh[j+1]) && (pLow[j] <= pLow[j+1]))
             {
               nSpan--;
             }
@@ -214,8 +209,7 @@ int Parse2(int nCount, float *pOut, float *pHigh, float *pLow)
           nSpan = nPrevBot - nPrevTop;
           for (int j = nPrevTop; j < nPrevBot; j++)
           {
-            if (((pHigh[j] <= pHigh[j+1]) && (pLow[j] >= pLow[j+1])) ||
-                ((pHigh[j] >= pHigh[j+1]) && (pLow[j] <= pLow[j+1])))
+            if ((pHigh[j] >= pHigh[j+1]) && (pLow[j] <= pLow[j+1]))
             {
               nSpan--;
             }
