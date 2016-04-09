@@ -105,6 +105,9 @@ int Parse2(int nCount, float *pOut, float *pHigh, float *pLow)
           pOut[nPrevTop] = 0;
         }
       }
+      else
+      {
+      }
     }
 
     // 遇到低点，合并化简下降段（下上下）
@@ -125,6 +128,9 @@ int Parse2(int nCount, float *pOut, float *pHigh, float *pLow)
           pOut[nCurrTop] = 0;
           pOut[nPrevBot] = 0;
         }
+      }
+      else
+      {
       }
     }
   }
@@ -394,6 +400,7 @@ void Func6(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
 void Func7(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
 {
   int nStatus = 0, nPrevTop, nPrevBot;
+  int nRiseNum, nFallNum;
 
   for (int i = 0; i < nCount; i++)
   {
@@ -403,6 +410,7 @@ void Func7(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
       // 标记高点位置
       nStatus  = -1;
       nPrevTop = i - 1;
+      nFallNum = 0;
     }
     // 遇到线段低点
     else if (pIn[i-1] == -1)
@@ -410,6 +418,7 @@ void Func7(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
       // 标记低点位置
       nStatus  = 1;
       nPrevBot = i - 1;
+      nRiseNum = 0;
     }
 
     // 上升线段计算模式

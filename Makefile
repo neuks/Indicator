@@ -47,8 +47,8 @@ run: all
 	@$(TARGETS)
 
 clean:  
-	@echo [RM] $(OBJECTS) $(TARGETS)
-	@rm $(DEPENDS) $(OBJECTS) $(TARGETS)
+	@echo [RM] $(OBJECTS)
+	@rm $(DEPENDS) $(OBJECTS)
 
 # Standard Procedures
 %.dep : %.s 
