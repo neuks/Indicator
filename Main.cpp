@@ -273,7 +273,7 @@ void Func4(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
 }
 
 //=============================================================================
-// Func5: Output Buy/Sell Points
+// Func5: Output Visual Buy/Sell Points
 //=============================================================================
 
 void Func5(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
@@ -323,7 +323,7 @@ void Func5(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
 }
 
 //=============================================================================
-// Func6: Output Buy/Sell Points
+// Func6: Output Operational Buy/Sell Points
 //=============================================================================
 
 void Func6(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
@@ -382,6 +382,43 @@ void Func6(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
   }
 }
 
+//=============================================================================
+// Func7: Output Trend Strength Indicator
+//=============================================================================
+
+void Func7(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
+{
+  int nStatus = 0, nPrevTop, nPrevBot;
+
+  for (int i = 0; i < nCount; i++)
+  {
+    // switch calculation state
+    if (pIn[i-1] == 1)
+    {
+      nStatus  = -1;
+      nPrevTop = i - 1;
+    }
+    else if (pIn[i-1] == -1)
+    {
+      nStatus  = 1;
+      nPrevBot = i - 1;
+    }
+
+    if (nStatus == 1)
+    {
+      // calculate for rising pattern
+      pOut[i] = (pHigh[i] - pLow[nPrevBot]) / (i - nPrevBot)
+        / pLow[nPrevBot] * 100;
+    }
+    else if (nStatus == -1)
+    {
+      // calculate for falling pattern
+      pOut[i] = (pLow[i] - pHigh[nPrevTop]) / (i - nPrevTop)
+        / pHigh[nPrevTop] * 100;
+    }
+  }
+}
+
 static PluginTCalcFuncInfo Info[] =
 {
   {1, &Func1},
@@ -390,6 +427,7 @@ static PluginTCalcFuncInfo Info[] =
   {4, &Func4},
   {5, &Func5},
   {6, &Func6},
+  {7, &Func7},
   {0, NULL},
 };
 

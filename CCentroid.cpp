@@ -23,6 +23,8 @@ CCentroid::CCentroid()
   this->bValid = false;
   this->nTop1  = 0;
   this->nTop2  = 0;
+  this->nBot1  = 0;
+  this->nBot2  = 0;
   this->fTop1  = 0;
   this->fTop2  = 0;
   this->fBot1  = 0;
@@ -94,7 +96,7 @@ bool CCentroid::PushHigh(int nIndex, float fValue)
       fHigh  = fTop1;
     }
 
-    // Centroid termination
+    // Centroid termination for 3rd BSP
     if (fHigh < fLow)
     {
       fHigh  = fTop1;
