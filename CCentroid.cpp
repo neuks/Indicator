@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Visual K-Line Analysing System For Zen Theory
+ * 禅论可视化分析系统
  * Copyright (C) 2016, Martin Tang
 
  * This program is free software: you can redistribute it and/or modify
@@ -42,6 +42,7 @@ CCentroid::~CCentroid()
 {
 }
 
+// 推入高点并计算状态
 bool CCentroid::PushHigh(int nIndex, float fValue)
 {
   if (bValid == true)
@@ -55,16 +56,16 @@ bool CCentroid::PushHigh(int nIndex, float fValue)
     nLines = 0;
   }
 
-  // Update top and bottom points
+  // 更新高低点位置信息
   nTop2 = nTop1;
   fTop2 = fTop1;
   nTop1 = nIndex;
   fTop1 = fValue;
 
-  // Check centroids
+  // 如果非中枢模式下
   if (bValid == false)
   {
-    // Update lowest top
+    // 更新中枢高
     if (fTop1 < fTop2)
     {
       fHigh  = fTop1;
@@ -74,7 +75,7 @@ bool CCentroid::PushHigh(int nIndex, float fValue)
       fHigh  = fTop2;
     }
 
-    // Centroid generation
+    // 中枢识别
     if (fHigh > fLow)
     {
       if  (fBot1 < fBot2)
@@ -88,15 +89,16 @@ bool CCentroid::PushHigh(int nIndex, float fValue)
       bValid = true;
     }
   }
+  // 如果在中枢中
   else
   {
-    // Update status
+    // 更新中枢高
     if (fHigh > fTop1)
     {
       fHigh  = fTop1;
     }
 
-    // Centroid termination for 3rd BSP
+    // 中枢终结
     if (fHigh < fLow)
     {
       fHigh  = fTop1;
@@ -127,16 +129,16 @@ bool CCentroid::PushLow(int nIndex, float fValue)
     nLines = 0;
   }
 
-  // Update top and bottom points
+  // 更新定位信息
   nBot2 = nBot1;
   fBot2 = fBot1;
   nBot1 = nIndex;
   fBot1 = fValue;
 
-  // Check centroids
+  // 如果非中枢模式下
   if (bValid == false)
   {
-    // Update highest bottom
+    // 更新区间低点
     if (fBot1 > fBot2)
     {
       fLow = fBot1;
@@ -146,7 +148,7 @@ bool CCentroid::PushLow(int nIndex, float fValue)
       fLow = fBot2;
     }
 
-    // Centroid generation
+    // 中枢捕捉
     if (fHigh > fLow)
     {
       if (fTop1 > fTop2)
@@ -160,15 +162,16 @@ bool CCentroid::PushLow(int nIndex, float fValue)
       bValid = true;
     }
   }
+  // 如果在中枢中
   else 
   {
-    // Update status
+    // 更新中枢低
     if (fLow < fBot1)
     {
       fLow = fBot1;
     }
 
-    // Centroid termination
+    // 中枢终结
     if (fHigh < fLow)
     {
       fHigh  = fTop1;

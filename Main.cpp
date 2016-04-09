@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Visual K-Line Analysing System For Zen Theory
+ * 禅论可视化分析系统
  * Copyright (C) 2016, Martin Tang
 
  * This program is free software: you can redistribute it and/or modify
@@ -19,10 +19,10 @@
 #include "Main.h"
 
 //=============================================================================
-// Mathmatic Functions
+// 数学函数部分
 //=============================================================================
 
-// Find top & bottom
+// 顶底扫描定位函数
 void Parse1(int nCount, float *pOut, float *pHigh, float *pLow)
 {
   int nState = -1;
@@ -31,13 +31,13 @@ void Parse1(int nCount, float *pOut, float *pHigh, float *pLow)
 
   for (int i = 1; i < nCount; i++)
   {
-    // Set default value
+    // 设定默认输出为零
     pOut[i] = 0;
 
-    // Seeking high points
+    // 寻找高点模式
     if (nState == 1)
     {
-      // Set initial high index, and update at higher points
+      // 如果当前最高大于之前最高，更新位置信息
       if (pHigh[i] >= pHigh[nHigh])
       {
         pOut[nHigh] = 0;
@@ -45,7 +45,7 @@ void Parse1(int nCount, float *pOut, float *pHigh, float *pLow)
         pOut[nHigh] = 1;
       }
 
-      // Confirm turn, switch state and return
+      // 确认转向（原文：当前最高小于高点最低，当前最低小于高点最低）
       if ((pHigh[i] < pHigh[nHigh]) && (pLow[i]  < pLow[nHigh]))
       {
         pOut[nHigh] = 1;
@@ -55,10 +55,10 @@ void Parse1(int nCount, float *pOut, float *pHigh, float *pLow)
       }
     }
 
-    // Seeking low points
+    // 寻找低点模式
     else if (nState == -1)
     {
-      // Set initial low index, and update at lower points
+      // 如果当前最低小于之前最低，更新位置信息
       if (pLow[i] <= pLow[nLow])
       {
         pOut[nLow] = 0;
@@ -66,7 +66,7 @@ void Parse1(int nCount, float *pOut, float *pHigh, float *pLow)
         pOut[nLow] = -1;
       }
 
-      // Confirm turn, switch state and return
+      // 确认转向（原文：当前最高大于高点最低，当前最低大于高点最低）
       if ((pLow[i]  > pLow[nLow]) && (pHigh[i] > pHigh[nLow]))
       {
         pOut[nLow] = -1;
@@ -78,35 +78,26 @@ void Parse1(int nCount, float *pOut, float *pHigh, float *pLow)
   }
 }
 
-// Simlification
+// 化简函数（至少5根K线完成一笔）
 int Parse2(int nCount, float *pOut, float *pHigh, float *pLow)
 {
   int nCurrTop = 0, nPrevTop = 0;
   int nCurrBot = 0, nPrevBot = 0;
 
-  // Simplify connections using merging method
   for (int i = 0; i < nCount; i++)
   {
-    // Setting up referencing indexes
+    // 遇到高点，合并化简上升段（上下上）
     if (pOut[i] == 1)
     {
+      // 更新位置信息
       nPrevTop = nCurrTop;
       nCurrTop = i;
-    }
-    else if (pOut[i] == -1)
-    {
-      nPrevBot = nCurrBot;
-      nCurrBot = i;
-    }
 
-    // Merging rising trends
-    if (pOut[i] == 1)
-    {
-      // Check if period is invalid
+      // 检查合法性（严格按照连续五根形成一笔）
       if (((nCurrTop - nCurrBot < 4) && (nCount   - nCurrTop > 4)) ||
            (nCurrBot - nPrevTop < 4) || (nPrevTop - nPrevBot < 4))
       {
-        // On Up-Down-Up patterns, merge down link
+        // 存在小于五根的线段，去除中间一段
         if ((pHigh[nCurrTop] >= pHigh[nPrevTop]) &&
             (pLow [nCurrBot] >  pLow [nPrevBot]))
         {
@@ -116,14 +107,18 @@ int Parse2(int nCount, float *pOut, float *pHigh, float *pLow)
       }
     }
 
-    // Merging falling trends
+    // 遇到低点，合并化简下降段（下上下）
     if (pOut[i] == -1)
     {
-      // Check if period is invalid
+      // 更新位置信息
+      nPrevBot = nCurrBot;
+      nCurrBot = i;
+
+      // 检查合法性（严格按照连续五根形成一笔）
       if (((nCurrBot - nCurrTop < 4) && (nCount   - nCurrBot > 4)) ||
            (nCurrTop - nPrevBot < 4) || (nPrevBot - nPrevTop < 4))
       {
-        // On Down-Up-Down patterns, merge up link
+        // 存在小于五根的线段，去除中间一段
         if ((pLow [nCurrBot] <= pLow [nPrevBot]) &&
             (pHigh[nCurrTop] <  pHigh[nPrevTop]))
         {
@@ -136,13 +131,15 @@ int Parse2(int nCount, float *pOut, float *pHigh, float *pLow)
 }
 
 //=============================================================================
-// Func1: Output Link Information
+// 输出函数1号：线段高低点标记信号
 //=============================================================================
 
 void Func1(int nCount, float *pOut, float *pHigh, float *pLow, float *pTime)
 {
+  // 搜寻所有的高低点
   Parse1(nCount, pOut, pHigh, pLow);
 
+  // 根据设置的遍数，进行化简（第归算法）
   for (int i = 0; i < *pTime; i++)
   {
     Parse2(nCount, pOut, pHigh, pLow);
@@ -150,7 +147,7 @@ void Func1(int nCount, float *pOut, float *pHigh, float *pLow, float *pTime)
 }
 
 //=============================================================================
-// Func2: Output Centroid High
+// 输出函数2号：中枢高点数据
 //=============================================================================
 
 void Func2(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
@@ -159,11 +156,12 @@ void Func2(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
 
   for (int i = 0; i < nCount; i++)
   {
-    // Push state and check if centroid finishes
     if (pIn[i] == 1)
     {
+      // 遇到线段高点，推入中枢算法
       if (Centroid.PushHigh(i, pHigh[i]))
       {
+        // 区段内更新算得的中枢高数据
         for (int j = Centroid.nStart; j <= Centroid.nEnd; j++)
         {
           pOut[j] = Centroid.fPHigh;
@@ -172,8 +170,10 @@ void Func2(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
     }
     else if (pIn[i] == -1)
     {
+      // 遇到线段低点，推入中枢算法
       if (Centroid.PushLow(i, pLow[i]))
       {
+        // 区段内更新算得的中枢低数据
         for (int j = Centroid.nStart; j <= Centroid.nEnd; j++)
         {
           pOut[j] = Centroid.fPHigh;
@@ -181,7 +181,7 @@ void Func2(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
       }
     }
 
-    // Output tailing centroid
+    // 尾部未完成中枢处理
     if (Centroid.bValid && (Centroid.nLines >= 2) && (i == nCount - 1))
     {
       for (int j = Centroid.nStart; j < nCount; j++)
@@ -193,7 +193,7 @@ void Func2(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
 }
 
 //=============================================================================
-// Func3: Output Centroid Low
+// 输出函数3号：中枢低点数据
 //=============================================================================
 
 void Func3(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
@@ -202,11 +202,12 @@ void Func3(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
 
   for (int i = 0; i < nCount; i++)
   {
-    // Push state and check if centroid finishes
     if (pIn[i] == 1)
     {
+      // 遇到线段高点，推入中枢算法
       if (Centroid.PushHigh(i, pHigh[i]))
       {
+        // 区段内更新算得的中枢高数据
         for (int j = Centroid.nStart; j <= Centroid.nEnd; j++)
         {
           pOut[j] = Centroid.fPLow;
@@ -215,8 +216,10 @@ void Func3(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
     }
     else if (pIn[i] == -1)
     {
+      // 遇到线段低点，推入中枢算法
       if (Centroid.PushLow(i, pLow[i]))
       {
+        // 区段内更新算得的中枢低数据
         for (int j = Centroid.nStart; j <= Centroid.nEnd; j++)
         {
           pOut[j] = Centroid.fPLow;
@@ -224,7 +227,7 @@ void Func3(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
       }
     }
 
-    // Output tailing centroid
+    // 尾部未完成中枢处理
     if (Centroid.bValid && (Centroid.nLines >= 2) && (i == nCount - 1))
     {
       for (int j = Centroid.nStart; j < nCount; j++)
@@ -236,7 +239,7 @@ void Func3(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
 }
 
 //=============================================================================
-// Func4: Output Centroid Start & End Points
+// 输出函数4号：中枢起点、终点信号
 //=============================================================================
 
 void Func4(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
@@ -245,25 +248,28 @@ void Func4(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
 
   for (int i = 0; i < nCount; i++)
   {
-    // Output centroid start and end signals
     if (pIn[i] == 1)
     {
+      // 遇到线段高点，推入中枢算法
       if (Centroid.PushHigh(i, pHigh[i]))
       {
+        // 进行标记
         pOut[Centroid.nStart] = 1;
         pOut[Centroid.nEnd]   = 2;
       }
     }
     else if (pIn[i] == -1)
     {
+      // 遇到线段低点，推入中枢算法
       if (Centroid.PushLow(i, pLow[i]))
       {
+        // 进行标记
         pOut[Centroid.nStart] = 1;
         pOut[Centroid.nEnd]   = 2;
       }
     }
 
-    // Output tailing centroid signal
+    // 尾部未完成中枢处理
     if (Centroid.bValid && (Centroid.nLines >= 2) && (i == nCount - 1))
     {
       pOut[Centroid.nStart] = 1;
@@ -273,7 +279,7 @@ void Func4(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
 }
 
 //=============================================================================
-// Func5: Output Visual Buy/Sell Points
+// 输出函数5号：主图买卖点信号
 //=============================================================================
 
 void Func5(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
@@ -282,22 +288,20 @@ void Func5(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
 
   for (int i = 0; i < nCount; i++)
   {
-    // Output centroid start and end signals
     if (pIn[i] == 1)
     {
       if (Centroid.PushHigh(i, pHigh[i]))
       {
-        // 3rd sell point
+        // 第三类卖点信号
         pOut[i] = 13;
       }
       else if (Centroid.fTop1 < Centroid.fTop2)
       {
-        // 2nd sell point
+        // 第二类卖点信号
         pOut[i] = 12;
       }
       else
       {
-        // no sell point
         pOut[i] = 0;
       }
     }
@@ -305,17 +309,16 @@ void Func5(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
     {
       if (Centroid.PushLow(i, pLow[i]))
       {
-        // 3rd buy point
+        // 第三类买点信号
         pOut[i] = 3;
       }
       else if (Centroid.fBot1 > Centroid.fBot2)
       {
-        // 2nd buy point
+        // 第二类买点信号
         pOut[i] = 2;
       }
       else
       {
-        // no buy point
         pOut[i] = 0;
       }
     }
@@ -323,7 +326,7 @@ void Func5(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
 }
 
 //=============================================================================
-// Func6: Output Operational Buy/Sell Points
+// 输出函数6号：选股器买卖点信号
 //=============================================================================
 
 void Func6(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
@@ -332,12 +335,13 @@ void Func6(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
 
   for (int i = 0; i < nCount; i++)
   {
-    // Output centroid start and end signals
+    // 遇到线段高点
     if (pIn[i] == 1)
     {
+      // 推入中枢算法计算
       if (Centroid.PushHigh(i, pHigh[i]) && (Centroid.fBot1 < Centroid.fBot2))
       {
-        // 3rd sell point
+        // 第三类卖点
         pOut[i] = 13;
         pOut[nCount-1] = 13;
       }
@@ -345,22 +349,24 @@ void Func6(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
                (Centroid.fBot1 < Centroid.fBot2) &&
                (Centroid.fTop1 > Centroid.fBot2))
       {
-        // 2nd sell point
+        // 第二类卖点
         pOut[i] = 12;
         pOut[nCount-1] = 12;
       }
       else
       {
-        // no sell point
         pOut[i] = 0;
         pOut[nCount-1] = 0;
       }
     }
+
+    // 遇到线段低点
     else if (pIn[i] == -1)
     {
+      // 推入中枢算法计算
       if (Centroid.PushLow(i, pLow[i]) && (Centroid.fTop1 > Centroid.fTop2))
       {
-        // 3rd buy point
+        // 第三类买点
         pOut[i] = 3;
         pOut[nCount-1] = 3;
       }
@@ -368,13 +374,12 @@ void Func6(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
                (Centroid.fTop1 > Centroid.fTop2) &&
                (Centroid.fBot1 < Centroid.fTop2))
       {
-        // 2nd buy point
+        // 第二类买点
         pOut[i] = 2;
         pOut[nCount-1] = 2;
       }
       else
       {
-        // no buy point
         pOut[i] = 0;
         pOut[nCount-1] = 0;
       }
@@ -383,7 +388,7 @@ void Func6(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
 }
 
 //=============================================================================
-// Func7: Output Trend Strength Indicator
+// 输出函数7号：线段强度分析指标
 //=============================================================================
 
 void Func7(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
@@ -392,27 +397,32 @@ void Func7(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
 
   for (int i = 0; i < nCount; i++)
   {
-    // switch calculation state
+    // 遇到线段高点
     if (pIn[i-1] == 1)
     {
+      // 标记高点位置
       nStatus  = -1;
       nPrevTop = i - 1;
     }
+    // 遇到线段低点
     else if (pIn[i-1] == -1)
     {
+      // 标记低点位置
       nStatus  = 1;
       nPrevBot = i - 1;
     }
 
+    // 上升线段计算模式
     if (nStatus == 1)
     {
-      // calculate for rising pattern
+      // 计算上升线段斜率
       pOut[i] = (pHigh[i] - pLow[nPrevBot]) / (i - nPrevBot)
         / pLow[nPrevBot] * 100;
     }
+    // 下降线段计算模式
     else if (nStatus == -1)
     {
-      // calculate for falling pattern
+      // 计算上升线段斜率
       pOut[i] = (pLow[i] - pHigh[nPrevTop]) / (i - nPrevTop)
         / pHigh[nPrevTop] * 100;
     }

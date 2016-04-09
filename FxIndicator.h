@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Visual K-Line Analysing System For Zen Theory
+ * 禅论可视化分析系统
  * Copyright (C) 2016, Martin Tang
 
  * This program is free software: you can redistribute it and/or modify
