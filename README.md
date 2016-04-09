@@ -16,8 +16,19 @@
 　目前仅支持通达信软件使用，文件包中包含DLL、tne以及本说明文件。
 
 　安装时，首先将CZSC.dll复制到通达信安装目录下的T0002\dlls目录之中，
-并在通达信公式管理器中将本dll加载到1号dll插件之中，而后将CZSC.tne文
-件导入到公式管理器之中即可使用，指标名称为CZSC。
+并在通达信公式管理器中将本dll加载到1号dll插件之中。
+
+#通达信端代码
+
+DLL:=TDXDLL1(1,H,L,5);
+HIB:=TDXDLL1(2,DLL,H,L);
+LOB:=TDXDLL1(3,DLL,H,L);
+SIG:=TDXDLL1(4,DLL,H,L);
+IF(HIB,HIB,DRAWNULL), COLORYELLOW;
+IF(LOB,LOB,DRAWNULL), COLORYELLOW;
+STICKLINE(SIG,LOB,HIB,0,0), COLORYELLOW;
+DRAWLINE(DLL=-1,L,DLL=1,H,0), COLORYELLOW;
+DRAWLINE(DLL=1,H,DLL=-1,L,0), COLORYELLOW;
 
 #联系方式
 
