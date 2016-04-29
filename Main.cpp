@@ -105,7 +105,7 @@ int Parse2(int nCount, float *pOut, float *pHigh, float *pLow)
           pOut[nCurrBot] = 0;
           pOut[nPrevTop] = 0;
         }
-        else
+        else if (nCount - nCurrTop > 4)
         {
           // 检查第三段（上）K线合并
           nSpan = nCurrTop - nCurrBot;
@@ -173,7 +173,7 @@ int Parse2(int nCount, float *pOut, float *pHigh, float *pLow)
           pOut[nCurrTop] = 0;
           pOut[nPrevBot] = 0;
         }
-        else
+        else if (nCount - nCurrBot > 4)
         {
           // 检查第三段（下）K线合并
           nSpan = nCurrBot - nCurrTop;
