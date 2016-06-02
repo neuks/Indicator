@@ -488,8 +488,7 @@ void Func6(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
 
 void Func7(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
 {
-  int nStatus = 0, nPrevTop, nPrevBot;
-  int nRiseNum, nFallNum;
+  int nPrevTop = 0, nPrevBot = 0;
 
   for (int i = 0; i < nCount; i++)
   {
@@ -497,32 +496,26 @@ void Func7(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
     if (pIn[i-1] == 1)
     {
       // 标记高点位置
-      nStatus  = -1;
       nPrevTop = i - 1;
-      nFallNum = 0;
     }
     // 遇到线段低点
     else if (pIn[i-1] == -1)
     {
       // 标记低点位置
-      nStatus  = 1;
       nPrevBot = i - 1;
-      nRiseNum = 0;
     }
 
     // 上升线段计算模式
     if (pIn[i] == 1)
     {
       // 计算上升线段斜率
-      pOut[i] = (pHigh[i] - pLow[nPrevBot]) / (i - nPrevBot)
-        / pLow[nPrevBot] * 100;
+      pOut[i] = (pHigh[i] - pLow[nPrevBot]) / pLow[nPrevBot] * 100;
     }
     // 下降线段计算模式
     else if (pIn[i] == -1)
     {
       // 计算上升线段斜率
-      pOut[i] = (pLow[i] - pHigh[nPrevTop]) / (i - nPrevTop)
-        / pHigh[nPrevTop] * 100;
+      pOut[i] = (pLow[i] - pHigh[nPrevTop]) / pHigh[nPrevTop] * 100;
     }
   }
 }
