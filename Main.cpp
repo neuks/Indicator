@@ -374,7 +374,7 @@ void Func4(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
 }
 
 //=============================================================================
-// 输出函数5号：主图买卖点信号
+// 输出函数5号：三类买卖点信号
 //=============================================================================
 
 void Func5(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
@@ -421,63 +421,61 @@ void Func5(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
 }
 
 //=============================================================================
-// 输出函数6号：选股器买卖点信号
+// 输出函数6号：形态买卖点信号
 //=============================================================================
 
 void Func6(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
 {
-  CCentroid Centroid;
+  float fTop1 = 0, fTop2 = 0, fTop3 = 0, fTop4 = 0;
+  float fBot1 = 0, fBot2 = 0, fBot3 = 0, fBot4 = 0;
 
   for (int i = 0; i < nCount; i++)
   {
-    // 遇到线段高点
     if (pIn[i] == 1)
     {
-      // 推入中枢算法计算
-      if (Centroid.PushHigh(i, pHigh[i]) && (Centroid.fBot1 < Centroid.fBot2))
+      fTop4 = fTop3;
+      fTop3 = fTop2;
+      fTop2 = fTop1;
+      fTop1 = pHigh[i];
+
+      if (((fBot1 - fTop2)/fTop2 > (fBot2 - fTop3)/fTop3) &&
+          (fBot1 < fBot2) && (fTop2 < fTop3))
       {
-        // 第三类卖点
-        pOut[i] = 13;
-        pOut[nCount-1] = 13;
-      }
-      else if ((Centroid.fTop1 < Centroid.fTop2) &&
-               (Centroid.fBot1 < Centroid.fBot2) &&
-               (Centroid.fTop1 > Centroid.fBot2))
-      {
-        // 第二类卖点
-        pOut[i] = 12;
-        pOut[nCount-1] = 12;
-      }
-      else
-      {
-        pOut[i] = 0;
-        pOut[nCount-1] = 0;
+        if (((fBot2 - fTop3)/fTop3 > (fBot3 - fTop4)/fTop4) &&
+            (fBot2 < fBot3) && (fTop3 < fTop4))
+        {
+          pOut[i] = 2;
+        }
+        else
+        {
+          pOut[i] = 1;
+        }
       }
     }
-
-    // 遇到线段低点
     else if (pIn[i] == -1)
     {
-      // 推入中枢算法计算
-      if (Centroid.PushLow(i, pLow[i]) && (Centroid.fTop1 > Centroid.fTop2))
+      fBot4 = fBot3;
+      fBot3 = fBot2;
+      fBot2 = fBot1;
+      fBot1 = pLow[i];
+
+      if (((fBot1 - fTop1)/fTop1 > (fBot2 - fTop2)/fTop2) &&
+          (fBot1 < fBot2) && (fTop1 < fTop2))
       {
-        // 第三类买点
-        pOut[i] = 3;
-        pOut[nCount-1] = 3;
+        if (((fBot2 - fTop2)/fTop2 > (fBot3 - fTop3)/fTop3) &&
+            (fBot2 < fBot3) && (fTop2 < fTop3))
+        {
+          pOut[i] = 2;
+        }
+        else
+        {
+          pOut[i] = 1;
+        }
       }
-      else if ((Centroid.fBot1 > Centroid.fBot2) &&
-               (Centroid.fTop1 > Centroid.fTop2) &&
-               (Centroid.fBot1 < Centroid.fTop2))
-      {
-        // 第二类买点
-        pOut[i] = 2;
-        pOut[nCount-1] = 2;
-      }
-      else
-      {
-        pOut[i] = 0;
-        pOut[nCount-1] = 0;
-      }
+    }
+    else
+    {
+      pOut[i] = 0;
     }
   }
 }
@@ -520,6 +518,44 @@ void Func7(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
   }
 }
 
+//=============================================================================
+// 输出函数8号：线段斜率分析指标
+//=============================================================================
+
+void Func8(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
+{
+  int nPrevTop = 0, nPrevBot = 0;
+
+  for (int i = 0; i < nCount; i++)
+  {
+    // 遇到线段高点
+    if (pIn[i-1] == 1)
+    {
+      // 标记高点位置
+      nPrevTop = i - 1;
+    }
+    // 遇到线段低点
+    else if (pIn[i-1] == -1)
+    {
+      // 标记低点位置
+      nPrevBot = i - 1;
+    }
+
+    // 上升线段计算模式
+    if (pIn[i] == 1)
+    {
+      // 计算上升线段斜率
+      pOut[i] = (pHigh[i] - pLow[nPrevBot]) / (i - nPrevBot);
+    }
+    // 下降线段计算模式
+    else if (pIn[i] == -1)
+    {
+      // 计算上升线段斜率
+      pOut[i] = (pLow[i] - pHigh[nPrevTop]) / (i - nPrevTop);
+    }
+  }
+}
+
 static PluginTCalcFuncInfo Info[] =
 {
   {1, &Func1},
@@ -529,6 +565,7 @@ static PluginTCalcFuncInfo Info[] =
   {5, &Func5},
   {6, &Func6},
   {7, &Func7},
+  {8, &Func8},
   {0, NULL},
 };
 
