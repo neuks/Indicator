@@ -188,4 +188,3 @@ bool CCentroid::PushLow(int nIndex, float fValue)
 
   return false;
 }
-

@@ -37,7 +37,7 @@ extern "C" {
 DECLSPEC_EXPORT  BOOL RegisterTdxFunc(PluginTCalcFuncInfo **pInfo);  
 #ifdef __cplusplus
 };
-#endif //__cplusplus
+#endif
 
 #pragma pack(pop)
 #endif

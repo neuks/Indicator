@@ -248,7 +248,7 @@ DECLSPEC_EXPORT BOOL InputInfoThenCalc2(char * Code,short nSetCode,int Value[4],
 
 #ifdef __cplusplus
 };
-#endif //__cplusplus
+#endif
 
 #pragma pack(pop)
 #endif

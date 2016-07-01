@@ -24,8 +24,7 @@ struct CCentroid
   bool  bValid;
   int   nTop1, nTop2, nBot1, nBot2;
   float fTop1, fTop2, fBot1, fBot2;
-  int   nLines;
-  int   nStart, nEnd;
+  int   nLines, nStart, nEnd;
   float fHigh, fLow, fPHigh, fPLow;
 
   CCentroid();
