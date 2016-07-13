@@ -447,8 +447,8 @@ void Func6(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
           pOut[i] = 1;
           continue;
         }
-        if ((fBot1 > fBot2) && (fTop2 > fTop3) &&
-            (fBot2 < fBot3) && (fTop3 < fTop4))
+        if ((fBot1 > fBot2) && (fTop2 > fTop3) && (fBot2 < fBot3) &&
+            (fTop3 < fTop4) && (fBot1 < fTop3))
         {
           pOut[i] = 2;
           continue;
@@ -476,8 +476,8 @@ void Func6(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
           pOut[i] = 1;
           continue;
         }
-        if ((fBot1 > fBot2) && (fTop1 > fTop2) &&
-            (fBot2 < fBot3) && (fTop2 < fTop3))
+        if ((fBot1 > fBot2) && (fTop1 > fTop2) && (fBot2 < fBot3) &&
+            (fTop2 < fTop3) && (fBot1 < fTop2))
         {
           pOut[i] = 2;
           continue;
