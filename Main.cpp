@@ -538,38 +538,27 @@ void Func7(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
 // 输出函数8号：线段斜率分析指标
 //=============================================================================
 
-void Func8(int nCount, float *pOut, float *pIn, float *pHigh, float *pLow)
+void Func8(int nCount, float* pOut, float* pIn, float* pHigh, float* pLow)
 {
-  int nPrevTop = 0, nPrevBot = 0;
-
-  for (int i = 0; i < nCount; i++)
-  {
-    // 遇到线段高点
-    if (pIn[i-1] == 1)
-    {
-      // 标记高点位置
-      nPrevTop = i - 1;
-    }
-    // 遇到线段低点
-    else if (pIn[i-1] == -1)
-    {
-      // 标记低点位置
-      nPrevBot = i - 1;
-    }
-
-    // 上升线段计算模式
-    if (pIn[i] == 1)
-    {
-      // 计算上升线段斜率
-      pOut[i] = (pHigh[i] - pLow[nPrevBot]) / (i - nPrevBot);
-    }
-    // 下降线段计算模式
-    else if (pIn[i] == -1)
-    {
-      // 计算上升线段斜率
-      pOut[i] = (pLow[i] - pHigh[nPrevTop]) / (i - nPrevTop);
-    }
-  }
+    int nPrevBot = -1;
+    int nPrevTop = -1;
+	for (int i = 0; i < nCount; ++i) {
+        pOut[i] = 0;
+        if (pIn[i] > 0.5) {
+			// 高点，计算上升段斜率
+			if (0 <= nPrevBot) {
+				pOut[i] = (pHigh[i] - pLow[nPrevBot]) / (i - nPrevBot);
+			}
+			nPrevTop = i;
+		}
+		else if (pIn[i] < -0.5) {
+			// 低点，计算下降段斜率
+			if (0 <= nPrevTop) {
+				pOut[i] = (pLow[i] - pHigh[nPrevTop]) / (i - nPrevTop);
+			}
+			nPrevBot = i;
+		}
+	}
 }
 
 static PluginTCalcFuncInfo Info[] =
